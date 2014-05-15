@@ -12,14 +12,28 @@ namespace SfFoodTrucks.Controllers
     public class FoodTruckController : ApiController
     {
         [HttpGet]
-        public List<Location> Index()
+        public List<FoodTruck> Index()
         {
-            List<Location> nearbyItems = new List<Location>();
-            var loc = new Location();
-            loc.XCoord = 37.75833;
-            loc.YCoord = -122.45628;
-            nearbyItems.Add(loc);
-            return nearbyItems;
+            List<FoodTruck> nearbyTrucks = new List<FoodTruck>();
+            var ft1 = new FoodTruck()
+            {
+                XCoord = 37.75833,
+                YCoord = -122.45628,
+                Applicant = "SF Momos",
+                FoodItems = "Momos, Burritos, Coke, Lemonade"
+            };
+
+            var ft2 = new FoodTruck()
+            {
+                XCoord = 37.75933,
+                YCoord = -122.45828,
+                Applicant = "Curry up now",
+                FoodItems = "Deconstructed Burrito, Kathi roll"
+            };
+
+            nearbyTrucks.Add(ft1);
+            nearbyTrucks.Add(ft2);
+            return nearbyTrucks;
         }
     }
 }

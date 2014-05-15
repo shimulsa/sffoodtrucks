@@ -15,12 +15,12 @@ namespace SfFoodTrucks.Models
         /// <summary>
         /// Location ID
         /// </summary>
-        [DataMember(Name = "name")]
         public int LocationId { get; set; }
 
         /// <summary>
         /// Applicant name
         /// </summary>
+        [DataMember(Name = "Applicant")]
         public string Applicant { get; set; }
 
         /// <summary>
@@ -61,16 +61,19 @@ namespace SfFoodTrucks.Models
         /// <summary>
         /// Food Items
         /// </summary>
+        [DataMember(Name = "FoodItems")]
         public string FoodItems { get; set; }
 
         /// <summary>
         /// X coordinate
         /// </summary>
+        [DataMember(Name = "XCoord")]
         public double XCoord { get; set; }
 
         /// <summary>
         /// Y coordinate
         /// </summary>
+        [DataMember(Name = "YCoord")]
         public double YCoord { get; set; }
 
         /// <summary>

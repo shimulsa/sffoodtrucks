@@ -1,19 +1,22 @@
-﻿function LoadMap() {
+﻿var bingCreds = "Av1LPz3-lukZMdQTm3HzUzRuBaj_tdmZ6XcFQ7D7Cq8xh7JRzLKg3lxUp0cguHJ-";
+var infoboxLayer = null;
+var map = null;
+
+function LoadMap() {
     Microsoft.Maps.loadModule('Microsoft.Maps.Themes.BingTheme', { callback: themesModuleLoaded });
 }
 
 
 
 function themesModuleLoaded() {
-    var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
+    map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
                       {
-                          credentials: "Av1LPz3-lukZMdQTm3HzUzRuBaj_tdmZ6XcFQ7D7Cq8xh7JRzLKg3lxUp0cguHJ-",
-                          //center: new Microsoft.Maps.Location(37.75733, -122.44628),
+                          credentials: bingCreds,
                           mapTypeId: Microsoft.Maps.MapTypeId.road,
                           zoom: 11
                       });
 
-    
+
     //map.entities.clear();
     var geoLocationProvider = new Microsoft.Maps.GeoLocationProvider(map);
     geoLocationProvider.getCurrentPosition();
@@ -27,7 +30,7 @@ function themesModuleLoaded() {
     //var pin = new Microsoft.Maps.Pushpin(currPos, pushpinOptions);
     //Microsoft.Maps.Events.addHandler(pin, 'drag', ondragDetails);
     //map.entities.push(pin);
-    
+
 
     // Create the infobox for the pushpin
     //pinInfobox = new Microsoft.Maps.Infobox(pin.getLocation(),
@@ -54,20 +57,9 @@ function ondragDetails(e) {
     //hideInfobox(e);
 }
 
-function displayInfobox(e) {
-    pinInfobox.setOptions({ visible: true });
-}
-
-function hideInfobox(e) {
-    pinInfobox.setOptions({ visible: false });
-}
 
 function ClickGeocode(credentials) {
-    var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
-                     {
-                         credentials: "Av1LPz3-lukZMdQTm3HzUzRuBaj_tdmZ6XcFQ7D7Cq8xh7JRzLKg3lxUp0cguHJ-"
-                     });
-
+    map.entities.clear();
     map.getCredentials(MakeGeocodeRequest);
 }
 
@@ -85,12 +77,7 @@ function CallRestService(request) {
 }
 
 function GeocodeCallback(result) {
-    //alert("Found location: " + result.resourceSets[0].resources[0].name);
 
-    var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
-                     {
-                         credentials: "Av1LPz3-lukZMdQTm3HzUzRuBaj_tdmZ6XcFQ7D7Cq8xh7JRzLKg3lxUp0cguHJ-"
-                     });
     if (result &&
            result.resourceSets &&
            result.resourceSets.length > 0 &&
@@ -107,40 +94,172 @@ function GeocodeCallback(result) {
 
         // Add a pin to the map
         var pin = new Microsoft.Maps.Pushpin(location, pushpinOptions);
+        pin.id = "searchedLoc";
         Microsoft.Maps.Events.addHandler(pin, 'drag', ondragDetails);
         map.entities.push(pin);
-
-        var limit = 50;
-        GetLoc();
+        GetLoc(map);
     }
 
-    function WriteResponse(data)
-    {
-        var map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
-                     {
-                         credentials: "Av1LPz3-lukZMdQTm3HzUzRuBaj_tdmZ6XcFQ7D7Cq8xh7JRzLKg3lxUp0cguHJ-",
-                         mapTypeId: Microsoft.Maps.MapTypeId.road,
-                         zoom: 11
-                     });
-
+    function WriteResponse(data, map) {
         var pushpinOptions = { icon: '../Content/GreenPushpin.png' };
+        var limit = 50;
+        if (data.length < limit) {
+            limit = data.length;
+        }
 
-        var pushpin = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(data[0].XCoord, data[0].YCoord), pushpinOptions);
-        map.entities.push(pushpin);
+        var boundaries = new Array();
+        infoboxLayer = new Microsoft.Maps.EntityCollection();
+        var searchedLocPin = GetEntityByProperty(map.entities, "id", "searchedLoc");
+        boundaries.push(searchedLocPin.getLocation());
+        for (var i = 0; i < limit; i++) {
+            var newLoc = new Microsoft.Maps.Location(data[i].XCoord, data[i].YCoord);
+            boundaries.push(newLoc);
+            var pushpin = new Microsoft.Maps.Pushpin(newLoc, pushpinOptions);
+
+            // Create the infobox for the pushpin
+            var pinInfobox = new Microsoft.Maps.Infobox(newLoc,
+                {
+                    width: 150,
+                    height: 100,
+                    title: data[i].Applicant,
+                    description: data[i].FoodItems,
+                    visible: false,
+                    offset: new Microsoft.Maps.Point(0, 15),
+                });
+
+            // Add handler for the pushpin click event.
+            Microsoft.Maps.Events.addHandler(pushpin, 'click', displayInfobox);
+            Microsoft.Maps.Events.addHandler(pushpin, 'tap', displayInfobox);
+            Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', displayInfobox);
+
+            // Hide the infobox when the mouse is moved away
+            Microsoft.Maps.Events.addHandler(pushpin, 'mouseout', hideInfobox);
+
+            map.entities.push(pushpin);
+            infoboxLayer.push(pinInfobox);
+        }
+
+        map.entities.push(infoboxLayer);
+        var viewBoundaries = Microsoft.Maps.LocationRect.fromLocations(boundaries);
+        map.setView({ bounds: viewBoundaries });
     }
 
-    function GetLoc() {
+    function GetLoc(map) {
         jQuery.support.cors = true;
         $.ajax({
-            url: 'http://localhost:24869/v1/FoodTruck',
+            url: document.location.protocol + "//" + document.location.host + '/v1/FoodTruck',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                WriteResponse(data);
+                WriteResponse(data, map);
             },
             error: function (x, y, z) {
                 alert(x + '\n' + y + '\n' + z);
             }
         });
     }
+
+    function GetEntityByProperty(collection, propertyName, propertyValue) {
+        var len = collection.getLength(), entity;
+
+        for (var i = 0; i < len; i++) {
+            entity = collection.get(i);
+
+            if (entity[propertyName] && entity[propertyName] == propertyValue) {
+                return entity;
+            } else if (entity.getLength) {
+                //Entity collections have this property and we want to look inside these collections
+                var innerEntity = GetEntityByProperty(entity, propertyName, propertyValue);
+
+                if (innerEntity != null) {
+                    return innerEntity;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    function GetEntityByLocation(collection, propertyValue) {
+        var len = collection.getLength(), entity;
+
+        for (var i = 0; i < len; i++) {
+            entity = collection.get(i);
+
+            if (entity.getLocation() == propertyValue) {
+                return entity;
+            }
+        }
+
+        return null;
+    }
+
+    function displayInfobox(e) {
+        if (e.targetType == "pushpin") {
+            var loc = e.target.getLocation();
+            if (infoboxLayer != null) {
+                var pinInfobox = GetEntityByLocation(infoboxLayer, loc);
+                //map.setView({ center: loc });
+
+
+                //A buffer limit to use to specify the infobox must be away from the edges of the map.
+                var buffer = 25;
+
+                var infoboxOffset = pinInfobox.getOffset();
+                var infoboxAnchor = pinInfobox.getAnchor();
+                var infoboxLocation = map.tryLocationToPixel(e.target.getLocation(), Microsoft.Maps.PixelReference.control);
+
+                var dx = infoboxLocation.x + infoboxOffset.x - infoboxAnchor.x;
+                var dy = infoboxLocation.y - 25 - infoboxAnchor.y;
+
+                if (dy < buffer) {    //Infobox overlaps with top of map.
+                    //Offset in opposite direction.
+                    dy *= -1;
+
+                    //add buffer from the top edge of the map.
+                    dy += buffer;
+                } else {
+                    //If dy is greater than zero than it does not overlap.
+                    dy = 0;
+                }
+
+                if (dx < buffer) {    //Check to see if overlapping with left side of map.
+                    //Offset in opposite direction.
+                    dx *= -1;
+
+                    //add a buffer from the left edge of the map.
+                    dx += buffer;
+                } else {              //Check to see if overlapping with right side of map.
+                    dx = map.getWidth() - infoboxLocation.x + infoboxAnchor.x - pinInfobox.getWidth();
+
+                    //If dx is greater than zero then it does not overlap.
+                    if (dx > buffer) {
+                        dx = 0;
+                    } else {
+                        //add a buffer from the right edge of the map.
+                        dx -= buffer;
+                    }
+                }
+
+                //Adjust the map so infobox is in view
+                if (dx != 0 || dy != 0) {
+                    map.setView({ centerOffset: new Microsoft.Maps.Point(dx, dy), center: map.getCenter() });
+                }
+            }
+
+
+            pinInfobox.setOptions({ visible: true });
+        }
+    }
+
+
+    function hideInfobox(e) {
+        var loc = e.target.getLocation();
+        if (infoboxLayer != null) {
+            var infoBox = GetEntityByLocation(infoboxLayer, loc);
+            infoBox.setOptions({ visible: false });
+        }
+    }
+
 }

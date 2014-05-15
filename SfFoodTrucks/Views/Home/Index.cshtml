@@ -1,12 +1,11 @@
 ﻿@{
-    ViewBag.Title = "SFooTrucks";
+    ViewBag.Title = "SF";
 }
 
 <div class="jumbotron">
     <h1>Hungry?</h1>
-    <p class="lead">Enter an address in SF and we will find you food trucks nearby.</p>
+    <p class="lead">Enter an address to find food trucks nearby.</p>
     <input id="txtQuery" type="text" class="twitterStyleTextbox" />
     <input type="button" value="Find Trucks Nearby" class="btn btn-primary btn-large" onclick="ClickGeocode()" /> 
-    <div id='mapDiv' style="position:relative; width:900px; height:600px;"></div>
-
+    <div class="jumbotron" id='mapDiv' style="position:relative; height:75vh;"></div>
 </div>

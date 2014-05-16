@@ -49,7 +49,7 @@ namespace SfFoodTrucks.DataRepository
             return foodTrucks;
         }
 
-        private double CalcProximity(double lat1, double lon1, double lat2, double lon2)
+        public double CalcProximity(double lat1, double lon1, double lat2, double lon2)
         {
             double theta = lon1 - lon2;
             double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) +

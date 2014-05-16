@@ -19,25 +19,10 @@ namespace SfFoodTrucks.Models
         public string Status { get; set; }
 
         /// <summary>
-        /// Location ID
-        /// </summary>
-        public int LocationId { get; set; }
-
-        /// <summary>
         /// Applicant name
         /// </summary>
         [DataMember(Name = "applicant")]
         public string Applicant { get; set; }
-
-        /// <summary>
-        /// Facility Type
-        /// </summary>
-        public string FacilityType { get; set; }
-
-        /// <summary>
-        /// Location Description
-        /// </summary>
-        public string LocDesc { get; set; }
 
         /// <summary>
         /// Schedule
@@ -50,11 +35,6 @@ namespace SfFoodTrucks.Models
         /// </summary>
         [DataMember(Name = "address")]
         public string Address { get; set; }
-
-        /// <summary>
-        /// Block Lot
-        /// </summary>
-        public int BlockLot { get; set; }
 
         /// <summary>
         /// Lot
@@ -73,16 +53,6 @@ namespace SfFoodTrucks.Models
         /// </summary>
         [DataMember(Name = "fooditems")]
         public string FoodItems { get; set; }
-
-        /// <summary>
-        /// X coordinate
-        /// </summary>
-        public double XCoord { get; set; }
-
-        /// <summary>
-        /// Y coordinate
-        /// </summary>
-        public double YCoord { get; set; }
 
         /// <summary>
         /// Latitude

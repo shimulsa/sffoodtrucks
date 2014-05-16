@@ -1,62 +1,24 @@
 ﻿var bingCreds = "Av1LPz3-lukZMdQTm3HzUzRuBaj_tdmZ6XcFQ7D7Cq8xh7JRzLKg3lxUp0cguHJ-";
 var infoboxLayer = null;
 var map = null;
+var searchLocation = null;
 
 function LoadMap() {
     Microsoft.Maps.loadModule('Microsoft.Maps.Themes.BingTheme', { callback: themesModuleLoaded });
 }
-
-
 
 function themesModuleLoaded() {
     map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
                       {
                           credentials: bingCreds,
                           mapTypeId: Microsoft.Maps.MapTypeId.road,
+                          showMapTypeSelector:false,
                           zoom: 11
                       });
 
-
-    //map.entities.clear();
     var geoLocationProvider = new Microsoft.Maps.GeoLocationProvider(map);
     geoLocationProvider.getCurrentPosition();
-
-    // Retrieve the location of the map center 
-    //var center = map.getCenter();
-
-    //var pushpinOptions = { draggable: true };
-
-    // Add a pin to the center of the map
-    //var pin = new Microsoft.Maps.Pushpin(currPos, pushpinOptions);
-    //Microsoft.Maps.Events.addHandler(pin, 'drag', ondragDetails);
-    //map.entities.push(pin);
-
-
-    // Create the infobox for the pushpin
-    //pinInfobox = new Microsoft.Maps.Infobox(pin.getLocation(),
-    //    {
-    //        title: 'My Pushpin',
-    //        description: 'This pushpin is located at (0,0).',
-    //        visible: false,
-    //        offset: new Microsoft.Maps.Point(0, 15),
-    //    });
-
-    // Add handler for the pushpin click event.
-    //Microsoft.Maps.Events.addHandler(pin, 'click', displayInfobox);
-
-    // Hide the infobox when the map is moved.
-    //Microsoft.Maps.Events.addHandler(map, 'mouseout', hideInfobox);
-
-
-    // Add the pushpin and infobox to the map
-    //map.entities.push(pinInfobox);
 }
-
-function ondragDetails(e) {
-    //pinInfobox.setOptions({ visible: true });
-    //hideInfobox(e);
-}
-
 
 function ClickGeocode(credentials) {
     map.entities.clear();
@@ -83,36 +45,29 @@ function GeocodeCallback(result) {
            result.resourceSets.length > 0 &&
            result.resourceSets[0].resources &&
            result.resourceSets[0].resources.length > 0) {
+
         // Set the map view using the returned bounding box
         var bbox = result.resourceSets[0].resources[0].bbox;
         var viewBoundaries = Microsoft.Maps.LocationRect.fromLocations(new Microsoft.Maps.Location(bbox[0], bbox[1]), new Microsoft.Maps.Location(bbox[2], bbox[3]));
         map.setView({ bounds: viewBoundaries });
 
         // Add a pushpin at the found location
-        var location = new Microsoft.Maps.Location(result.resourceSets[0].resources[0].point.coordinates[0], result.resourceSets[0].resources[0].point.coordinates[1]);
-        var pushpinOptions = { draggable: true };
+        searchLocation = new Microsoft.Maps.Location(result.resourceSets[0].resources[0].point.coordinates[0], result.resourceSets[0].resources[0].point.coordinates[1]);
+        var pushpinOptions = { draggable: false };
 
         // Add a pin to the map
-        var pin = new Microsoft.Maps.Pushpin(location, pushpinOptions);
-        pin.id = "searchedLoc";
-        Microsoft.Maps.Events.addHandler(pin, 'drag', ondragDetails);
+        var pin = new Microsoft.Maps.Pushpin(searchLocation, pushpinOptions);
         map.entities.push(pin);
         GetLoc(map);
     }
 
     function WriteResponse(data, map) {
         var pushpinOptions = { icon: '../Content/GreenPushpin.png' };
-        var limit = 50;
-        if (data.length < limit) {
-            limit = data.length;
-        }
-
         var boundaries = new Array();
         infoboxLayer = new Microsoft.Maps.EntityCollection();
-        var searchedLocPin = GetEntityByProperty(map.entities, "id", "searchedLoc");
-        boundaries.push(searchedLocPin.getLocation());
-        for (var i = 0; i < limit; i++) {
-            var newLoc = new Microsoft.Maps.Location(data[i].XCoord, data[i].YCoord);
+        boundaries.push(searchLocation);
+        for (var i = 0; i < data.length; i++) {
+            var newLoc = new Microsoft.Maps.Location(data[i].latitude, data[i].longitude);
             boundaries.push(newLoc);
             var pushpin = new Microsoft.Maps.Pushpin(newLoc, pushpinOptions);
 
@@ -121,19 +76,15 @@ function GeocodeCallback(result) {
                 {
                     width: 150,
                     height: 100,
-                    title: data[i].Applicant,
-                    description: data[i].FoodItems,
+                    title: "<a href=\"" + data[i].schedule + "\">" + data[i].applicant.substr(0,30) + "</a>",
+                    description: data[i].address,
                     visible: false,
                     offset: new Microsoft.Maps.Point(0, 15),
                 });
 
             // Add handler for the pushpin click event.
             Microsoft.Maps.Events.addHandler(pushpin, 'click', displayInfobox);
-            Microsoft.Maps.Events.addHandler(pushpin, 'tap', displayInfobox);
             Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', displayInfobox);
-
-            // Hide the infobox when the mouse is moved away
-            Microsoft.Maps.Events.addHandler(pushpin, 'mouseout', hideInfobox);
 
             map.entities.push(pushpin);
             infoboxLayer.push(pinInfobox);
@@ -147,7 +98,7 @@ function GeocodeCallback(result) {
     function GetLoc(map) {
         jQuery.support.cors = true;
         $.ajax({
-            url: document.location.protocol + "//" + document.location.host + '/v1/FoodTruck',
+            url: document.location.protocol + "//" + document.location.host + "/v1/FoodTruck?latitude=" + searchLocation.latitude + "&longitude=" + searchLocation.longitude,
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -158,28 +109,6 @@ function GeocodeCallback(result) {
             }
         });
     }
-
-    function GetEntityByProperty(collection, propertyName, propertyValue) {
-        var len = collection.getLength(), entity;
-
-        for (var i = 0; i < len; i++) {
-            entity = collection.get(i);
-
-            if (entity[propertyName] && entity[propertyName] == propertyValue) {
-                return entity;
-            } else if (entity.getLength) {
-                //Entity collections have this property and we want to look inside these collections
-                var innerEntity = GetEntityByProperty(entity, propertyName, propertyValue);
-
-                if (innerEntity != null) {
-                    return innerEntity;
-                }
-            }
-        }
-
-        return null;
-    }
-
 
     function GetEntityByLocation(collection, propertyValue) {
         var len = collection.getLength(), entity;
@@ -198,10 +127,8 @@ function GeocodeCallback(result) {
     function displayInfobox(e) {
         if (e.targetType == "pushpin") {
             var loc = e.target.getLocation();
-            if (infoboxLayer != null) {
+            if (infoboxLayer != null) {                
                 var pinInfobox = GetEntityByLocation(infoboxLayer, loc);
-                //map.setView({ center: loc });
-
 
                 //A buffer limit to use to specify the infobox must be away from the edges of the map.
                 var buffer = 25;
@@ -250,9 +177,23 @@ function GeocodeCallback(result) {
 
 
             pinInfobox.setOptions({ visible: true });
+            HideAllInfoboxButLocation(loc);
         }
     }
 
+
+    function HideAllInfoboxButLocation(loc)
+    {
+        var len = infoboxLayer.getLength(), entity;
+
+        for (var i = 0; i < len; i++) {
+            entity = infoboxLayer.get(i);
+
+            if (entity.getLocation() != loc) {
+                entity.setOptions({ visible: false });;
+            }
+        }
+    }
 
     function hideInfobox(e) {
         var loc = e.target.getLocation();
@@ -261,5 +202,4 @@ function GeocodeCallback(result) {
             infoBox.setOptions({ visible: false });
         }
     }
-
 }

@@ -13,6 +13,12 @@ namespace SfFoodTrucks.Models
     public class FoodTruck
     {
         /// <summary>
+        /// Status
+        /// </summary>
+        [DataMember(Name="status")]
+        public string Status { get; set; }
+
+        /// <summary>
         /// Location ID
         /// </summary>
         public int LocationId { get; set; }
@@ -20,7 +26,7 @@ namespace SfFoodTrucks.Models
         /// <summary>
         /// Applicant name
         /// </summary>
-        [DataMember(Name = "Applicant")]
+        [DataMember(Name = "applicant")]
         public string Applicant { get; set; }
 
         /// <summary>
@@ -34,8 +40,15 @@ namespace SfFoodTrucks.Models
         public string LocDesc { get; set; }
 
         /// <summary>
+        /// Schedule
+        /// </summary>
+        [DataMember(Name = "schedule")]
+        public string Schedule { get; set; }
+
+        /// <summary>
         /// Address
         /// </summary>
+        [DataMember(Name = "address")]
         public string Address { get; set; }
 
         /// <summary>
@@ -46,44 +59,51 @@ namespace SfFoodTrucks.Models
         /// <summary>
         /// Lot
         /// </summary>
-        public int Lot { get; set; }
+        [DataMember(Name = "lot")]
+        public string Lot { get; set; }
 
         /// <summary>
         /// Block 
         /// </summary>
-        public int Block { get; set; }
-
-        /// <summary>
-        /// Status
-        /// </summary>
-        public string Status { get; set; }
+        [DataMember(Name = "block")]
+        public string Block { get; set; }
 
         /// <summary>
         /// Food Items
         /// </summary>
-        [DataMember(Name = "FoodItems")]
+        [DataMember(Name = "fooditems")]
         public string FoodItems { get; set; }
 
         /// <summary>
         /// X coordinate
         /// </summary>
-        [DataMember(Name = "XCoord")]
         public double XCoord { get; set; }
 
         /// <summary>
         /// Y coordinate
         /// </summary>
-        [DataMember(Name = "YCoord")]
         public double YCoord { get; set; }
 
         /// <summary>
         /// Latitude
         /// </summary>
+        [DataMember(Name = "latitude")]
         public double Latitude { get; set; }
 
         /// <summary>
         /// Longitude
         /// </summary>
+        [DataMember(Name = "longitude")]
         public double Longitude { get; set; }
+
+        /// <summary>
+        /// Expiration date
+        /// </summary>
+        public DateTime ExpirationDate { get; set; }
+
+        /// <summary>
+        /// Distance from Searched Location
+        /// </summary>
+        public double DistFromSearchedLoc { get; set; }
     }
 }

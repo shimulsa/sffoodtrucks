@@ -40,7 +40,7 @@ Here is a list of the files I authored and what they do:
 
 Backend
 - FoodTruckController.cs - API definition for fetching "nearby" food trucks, given a location
-- FoodTruckRespository.cs - Data repository that exposes methods to fetch, cache and filter data
+- FoodTruckRespository.cs - Data repository that exposes methods to fetch, cache (8 hours) and filter data
 - RestClient.cs - Actual Rest client that the data repository uses to make a REST call to DataSF APIs and does
 JSON de/serialization
 - FoodTruck.cs - Model object to transform a JSON object from a REST response object

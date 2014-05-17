@@ -13,8 +13,8 @@ this in mind, I chose to opt for full stack in order to go through an exercise t
 I also used this as a learning opportunity to play around with technologies.
 
 Previous Experience:
-While at Microsoft, I have gained experience in development of front end as well as back end components. 
-Front end experience - I worked on two internal websites during my work at Microsoft, getting exposure to advanced MVC/HTML/JS/CSS concepts.
+I have gained experience in development of front end as well as back end components. 
+Front end experience - I worked on two internal websites, getting exposure to advanced MVC/HTML/JS/CSS concepts.
 Back end experience - I have experience standing up REST services in Azure as part of the Windows Phone Store Services team.
 
 --------------------------------

@@ -1,4 +1,4 @@
-﻿May 16, 2014
+May 16, 2014
 
 Hosted Application (Azure) - http://sffoodtrucks.azurewebsites.net
 Hosted Repository (GitHub) - https://github.com/shimulsa/sffoodtrucks

@@ -7,8 +7,8 @@ Project: SF Food Trucks
 Technical Track: Full Stack
 --------------------------------
 Reasoning:
-I chose to opt for full stack in order to go through an exercise to deliver a good E2E user experience. I also used this as a learning opportunity to play around with technologies.I enjoy working on services - it is gratifying to see millions of users hit a URL and have it power their
-core experiences. I personally enjoy working on backend service-oriented systems more, but a consumer experience can not be complete without a delightful front end.
+I chose to opt for full stack in order to go through an exercise to deliver a good E2E user experience. I also used this as a learning opportunity to play around with technologies.I enjoy working on services - it is gratifying to see millions of users hit a URL and have it power their core experiences. 
+I personally enjoy working on backend service-oriented systems more, but a consumer experience can not be complete without a delightful front end.
 
 Previous Experience:
 I have experience in development of front end as well as back end components as part of my current job. 

@@ -7,16 +7,11 @@ Project: SF Food Trucks
 Technical Track: Full Stack
 --------------------------------
 Reasoning:
-I really enjoy working on services - it is gratifying to see millions of users hit a URL and have it power their
-core experiences. That said, a consumer experience can not be complete without a delightful front end. Keeping
-this in mind, I chose to opt for full stack in order to go through an exercise to deliver a good E2E user experience.
-I also used this as a learning opportunity to play around with technologies.
+I chose to opt for full stack in order to go through an exercise to deliver a good E2E user experience. I also used this as a learning opportunity to play around with technologies.I enjoy working on services - it is gratifying to see millions of users hit a URL and have it power their
+core experiences. I personally enjoy working on backend service-oriented systems more, but a consumer experience can not be complete without a delightful front end.
 
 Previous Experience:
-I have gained experience in development of front end as well as back end components. 
-Front end experience - I worked on two internal websites, getting exposure to advanced MVC/HTML/JS/CSS concepts.
-Back end experience - I have experience standing up REST services in Azure as part of the Windows Phone Store Services team.
-
+I have experience in development of front end as well as back end components as part of my current job. 
 --------------------------------
 Tools and Technologies - What and Why?
 - Languages: C#, JS, HTML, CSS, JSON
@@ -29,9 +24,9 @@ Tools and Technologies - What and Why?
 - Source code: Git (Github)
 
 Reasoning for Choice: 
-ASP.NET is a complete web framework to create websites quickly and publish them directly to Azure. The E2E integration is quick to set up. Given the time
-constraints of the project, using ASP.NET was the most efficient way to have the pipeline running quickly. Since I am very familiar with .NET and ASP.NET, it was a 
-natural choice for me to start with something I am comfortable in.
+ASP.NET is a complete web framework to create websites quickly and publish them directly to Azure. The E2E integration is quick to set up. Given the time constraints of the project, using ASP.NET was the most efficient way to have the pipeline running quickly. 
+Since I am very familiar with .NET and ASP.NET, it was a natural choice for me to start with something I am comfortable in.
+
 Cons: .NET MVC5 is heavy-weight with a lot of boilerplate code that comes with the project templates.
 
 --------------------------------
@@ -41,14 +36,12 @@ Here is a list of the files I authored and what they do:
 Backend
 - FoodTruckController.cs - API definition for fetching "nearby" food trucks, given a location
 - FoodTruckRespository.cs - Data repository that exposes methods to fetch, cache (8 hours) and filter data
-- RestClient.cs - Actual Rest client that the data repository uses to make a REST call to DataSF APIs and does
-JSON de/serialization
-- FoodTruck.cs - Model object to transform a JSON object from a REST response object
+- RestClient.cs - Actual Rest client that the data repository uses to make a REST call to DataSF APIs aling with JSON de/serialization
+- FoodTruck.cs - Model object to transform to, from a JSON object returned in the REST response from DataSF
 
 Frontend
 - Index.html - Renders the landing page with search functionality and Bing Maps control
-- BingMaps.js - Javascript functions that the map uses to handle search and map-interaction events along with
-displays/views.
+- BingMaps.js - Javascript functions that the map uses to handle search and map-interaction events along with displays/views.
 
 Unit Tests
 - FoodTruckControllerTest.cs - Unit tests to test the Search API 
